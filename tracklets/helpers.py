@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ET
 
+from tracklets import Tracklet
+
 def tracklets_to_np(tracklets):
   N = len(tracklets)
   t_max = 0
@@ -11,7 +13,7 @@ def tracklets_to_np(tracklets):
   return trs_np
 
 
-def read_tracklets_from_xml(filename):
+def read_from_xml(filename):
   tree = ET.parse(filename)
   root = tree.getroot()
   tracklets = []

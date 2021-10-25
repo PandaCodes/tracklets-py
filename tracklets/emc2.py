@@ -2,6 +2,8 @@ import numpy as np
 from operator import attrgetter
 import math
 
+from tracklets import TPS
+
 def make_phi(tracklets, gap_max, d_max):
   # tracklets: [N] { 
   #   start: int, # starting frame
@@ -32,7 +34,7 @@ def make_phi(tracklets, gap_max, d_max):
       t = tracklets_by_end[ E ]
       control_tracklets.discard(t)
       if t.end == f-1:
-        real_idxs_to_f_prop[ t.index ] = len(f_prop_pts)
+        real_idxs_to_f_prop[ t.id ] = len(f_prop_pts)
         f_prop_pts.append(t.points[ len(t.points) - 1 ])
       E += 1
     
@@ -47,7 +49,7 @@ def make_phi(tracklets, gap_max, d_max):
     else:
       f_prop_pts_np = TPS(np.array(ctrl_p_s), np.array(ctrl_p_t), np.array(f_prop_pts))
       f_prop_pts = f_prop_pts_np.tolist()
-    f_prop_frames.append(f_prop_pts_np)  # TODO: stop propogation at gap_max
+    f_prop_frames.append(f_prop_pts_np)  # TODO: stop propogation at gap_max (ptimisation)
     
   print("Propagated forward", len(real_idxs_to_f_prop))
 
@@ -72,7 +74,7 @@ def make_phi(tracklets, gap_max, d_max):
       t = tracklets_by_start[ S ]
       control_tracklets.discard(t)
       if t.start == f+1:
-        real_idxs_to_b_prop[ t.index ] = len(b_prop_pts)
+        real_idxs_to_b_prop[ t.id ] = len(b_prop_pts)
         b_prop_pts.append(t.points[ 0 ])
       S -= 1
     
@@ -103,18 +105,18 @@ def make_phi(tracklets, gap_max, d_max):
       p1 = t1.point_at(f)
       if p1 is None:
         if t1.end < f:
-          p1 = f_prop_frames[f][real_idxs_to_f_prop[t1.index]]
+          p1 = f_prop_frames[f][real_idxs_to_f_prop[t1.id]]
         else:
-          p1 = b_prop_frames[f][real_idxs_to_b_prop[t1.index]]
+          p1 = b_prop_frames[f][real_idxs_to_b_prop[t1.id]]
       p2 = t2.point_at(f)
       if p2 is None:
         if t2.end < f:
-          p2 = f_prop_frames[f][real_idxs_to_f_prop[t2.index]]
+          p2 = f_prop_frames[f][real_idxs_to_f_prop[t2.id]]
         else:
-          p2 = b_prop_frames[f][real_idxs_to_b_prop[t2.index]]
+          p2 = b_prop_frames[f][real_idxs_to_b_prop[t2.id]]
       d = math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
       if d > d_max: continue
-      phi[t1.index,t2.index] = phi[t2.index, t1.index] = min(phi[t1.index,t2.index], d)
+      phi[t1.id,t2.id] = phi[t2.id, t1.id] = min(phi[t1.id,t2.id], d)
 
   
   for i, t1 in enumerate(tracklets):
