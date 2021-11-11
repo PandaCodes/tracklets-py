@@ -12,6 +12,7 @@ Along with a set of tools for a work with tracklets, which are essentially seque
 Usage:
 
 ```python
+# python 3 required
 import tracklets
 
 trls = tracklets.read_from_xml("data.xml")
@@ -32,12 +33,20 @@ concat_pairs = list(set([
   *[ (j,i) for i, j in enumerate(col_ind) if j >= 0 and j < i ],
 ]))
 # concat_pairs.sort(key=lambda x:x[0])
-
 ```
 
+## Tests:
+To execute tests, run:
+```sh
+pytest
+```
+There is a test marked `visual` - the one to evaluate visually if TPS transform gives a reasonable result.
+
+---
+
 TODO: 
-- Algorithm automated tests (+ tests description)
-- Concatenation based on TPS values
+- Algorithm automated tests
+- Approximations based on TPS values
 - Optimisation. Yes, this is python, but it takes too long comparing to lapjv, which is the most heavy part in Java implementation. Something seems to be wrong here.
 - XML format description + translations to other formats
 
