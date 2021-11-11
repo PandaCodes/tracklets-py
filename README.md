@@ -1,6 +1,6 @@
 # tracklets-py
 
-Elastic motion correction and concatenation (EMC2) algorithm implementation. [Preprint is here.](https://www.biorxiv.org/content/10.1101/2020.06.22.165696v1.abstract) 
+Elastic motion correction and concatenation (EMC2) algorithm implementation. [Preprint is here.](https://www.biorxiv.org/content/10.1101/2020.06.22.165696v3) 
 Along with a set of tools for a work with tracklets, which are essentially sequences of points in timeframes.
 
 
