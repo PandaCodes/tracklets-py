@@ -4,7 +4,11 @@ import time
 
 from tracklets import TPS, Tracklet, to_np
 
-def calc_propagation(np_trls, map_frame_index = lambda fi: fi, gap_max = np.inf):
+def calc_propagation(np_trls, max_len = np.inf, direction = 'forward'):
+  if direction == 'backward':
+    map_frame_index = lambda fi: F - 1 - fi
+  else:
+    map_frame_index = lambda fi: fi
   F, N, _ = np_trls.shape
   prop = np.full((F, N, 2), np.nan)
   pts_to_prop = np.full((N, 2), np.nan)
@@ -23,7 +27,7 @@ def calc_propagation(np_trls, map_frame_index = lambda fi: fi, gap_max = np.inf)
     pts_to_prop_idx = np.logical_or(pts_to_prop_idx, new_prop_idx)
     pts_to_prop[new_prop_idx] = prev_points[new_prop_idx]
 
-    max_gap_fi = fi - gap_max
+    max_gap_fi = fi - max_len
     if max_gap_fi > 0:
       prev_mg_idx = ~np.isnan(np_trls[map_frame_index(max_gap_fi-1), :, 0])
       no_curr_mg_idx = np.isnan(np_trls[map_frame_index(max_gap_fi), :, 0])
@@ -44,12 +48,12 @@ def make_phi(tracklets: [Tracklet], gap_max: int, d_max: float): #TODO: fiducial
 
   # Forward propagation first:
   t0 = time.time() 
-  fwd_prop = calc_propagation(np_trls, gap_max=gap_max)
+  fwd_prop = calc_propagation(np_trls, max_len=gap_max)
   print("Propagated forward", time.time() - t0)
 
   # Backward propagation then:
   t0 = time.time()
-  bwd_prop = calc_propagation(np_trls, gap_max=gap_max, map_frame_index=lambda fi: F - 1 - fi)
+  bwd_prop = calc_propagation(np_trls, max_len=gap_max, direction="backward")
   print("Propagated backward", time.time()-t0)
 
   phi = np.full((N, N), np.inf)
