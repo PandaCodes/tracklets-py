@@ -2,18 +2,8 @@ import xml.etree.ElementTree as ET
 
 from tracklets import Tracklet
 
-def tracklets_to_np(tracklets):
-  N = len(tracklets)
-  t_max = 0
-  for t in tracklets:
-      t_max = max(t_max, t.end)
-  trs_np = np.ones((N, t_max + 1, 2)) * np.Inf
-  for i, t in enumerate(tracklets):
-    trs_np[i, t.start: t.end+1, : ] = np.array(t.points)
-  return trs_np
 
-
-def read_from_xml(filename):
+def read_xml(filename):
   tree = ET.parse(filename)
   root = tree.getroot()
   tracklets = []
@@ -29,3 +19,5 @@ def read_from_xml(filename):
         len(tracklets)
       ))
   return tracklets
+
+

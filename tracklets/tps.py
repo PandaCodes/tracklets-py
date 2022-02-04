@@ -24,7 +24,7 @@ def liftPts(p, cp):
     # cp: [K x 2], control points
     # returns: [N x (3+K)], lifted input points
     N, K = p.shape[0], cp.shape[0]
-    pLift = np.zeros((N, K+3))
+    pLift = np.zeros((N, 3+K))
     pLift[:,0] = 1
     pLift[:,1:3] = p
     U = cdist(p, cp, 'euclidean')
