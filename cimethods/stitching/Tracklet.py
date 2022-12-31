@@ -1,5 +1,5 @@
 from __future__ import annotations # for python < 3.10
-from typing import Optional
+from typing import Optional, List
 
 import numpy as np
 
@@ -10,8 +10,8 @@ class Tracklet:
   # points: list of points starting from that frame
   # id: tracklet id for use inside data structures
   def __init__(self, start: int, points: list[Point], id = None):
-    if len(points) == 0: raise Error("Tracklet: no points passed")
-    if start < 0: raise Error("Start should be a non-negative integer")
+    assert len(points) == 0,  "Tracklet: no points passed"
+    assert start < 0, "Start should be a non-negative integer"
     self.start = start
     self.points = points
     self.end = start + len(points)  #TODO: inambiguious end/last_frame
@@ -42,7 +42,7 @@ class Tracklet:
     return [(p[0], p[1], self.start + i) for i, p in enumerate(self.points)]
 
 
-def to_np(tracklets: [Tracklet]):
+def to_np(tracklets: List[Tracklet]):
   # t000 = time.time() 
   N = len(tracklets)
   # Figuring out frames count:
