@@ -2,7 +2,7 @@ from typing import Union
 
 import torch
 from .grid import gauss_grid_theta
-from .utils import as_img_dims
+from .utils import RectangleDimentions, as_img_dims, real_to_range
 
 
 
@@ -144,20 +144,30 @@ class GaussSpot(TensorHolder):
     #     sig_d = sig0 + sig1 - 2 * torch.sqrt(sig0 * sig1)
     #     sig_d = sig_d.sum(-1)
 
-    # def limit_values(self, size, sig_min, sig_max, i_min, i_max, torus=False, clamp=False):
-#     shape = as_img_dims(size)
-#     if clamp:
-#         self.muX = self.muX.clamp(0, shape[0])
-#         self.muY = self.muY.clamp(0, shape[1])
-#         self.intensity = self.intensity.clamp(i_min, i_max)  # intencity
-#         self.sigD = self.sigD.clamp(sig_min, sig_max)
-#         return
+    def limit_values(self,
+        size: RectangleDimentions,
+        sig: tuple[float, float], 
+        intensity:  tuple[float, float], 
+        torus=False,
+        clamp=False,
+        in_place=False,
+    ):
+        shape = as_img_dims(size)
+        gs = self if in_place else GaussSpot(self.tensor.shape[:-1])
+        gs.theta = self.theta
+        if clamp:
+            gs.muX = self.muX.clamp(0, shape[0])
+            gs.muY = self.muY.clamp(0, shape[1])
+            gs.intensity = self.intensity.clamp(*intensity)
+            gs.sigD = self.sigD.clamp(*sig)
+            return gs
 
-#     if torus:
-#         self.muX = torch.remainder(self.muX, shape[0])
-#         self.muY = torch.remainder(self.muY, shape[1])
-#     else:
-#         self.muX = real_to_range(self.muX, 0, shape[0])
-#         self.muY = real_to_range(self.muY, 0, shape[1])
-#     self.intensity = real_to_range(self.intensity, i_min, i_max)  # intencity
-#     self.sigD = real_to_range(self.sigD, sig_min, sig_max)
+        if torus:
+            gs.muX = torch.remainder(self.muX, shape[0])
+            gs.muY = torch.remainder(self.muY, shape[1])
+        else:
+            gs.muX = real_to_range(self.muX, 0, shape[0])
+            gs.muY = real_to_range(self.muY, 0, shape[1])
+        gs.intensity = real_to_range(self.intensity, *intensity)
+        gs.sigD = real_to_range(self.sigD, *sig)
+        return gs
