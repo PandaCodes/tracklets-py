@@ -11,10 +11,25 @@ def find_local_maximas(
     threshold = 0.001,
     window=5,
 ):
-    assert len(image.shape) == 2, "Expected rectangle-like 2D tensor"
-    maximas_mp = local_maximas(image.unsqueeze(0).unsqueeze(0), window).squeeze(0).squeeze(0)
+    assert len(image.shape) >= 2, "Expected tensor to be at least 2D"
+    assert len(image.shape) <= 4, "Expected tensor to have at max 4 dimentions (B, C, W, H)"
     
+    need_unsqueeze_batch = False
+    if len(image.shape) == 2:
+        need_unsqueeze_batch = True
+        image = image.unsqueeze(0)
+    need_squeeze_chan = False
+    if len(image.shape) == 3:
+        need_squeeze_chan = True
+        image = image.unsqueeze(1) # add chan dim
+    
+    maximas_mp = local_maximas(image, window)
     center_idx = torch.logical_and(image == maximas_mp,  maximas_mp > threshold)
+
+    if need_squeeze_chan:
+        center_idx = center_idx.squeeze(1)
+    if need_unsqueeze_batch:
+        center_idx = center_idx.squeeze(0)
     return center_idx
 
 def pix_coords(idx, shape):

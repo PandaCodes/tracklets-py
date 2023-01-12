@@ -24,6 +24,10 @@ class TensorHolder():
     def tensor(self):
         return self._tensor
     
+    def to(self, device): # type?
+        self._tensor = self._tensor.to(device)
+        return self
+    
 
 
 class GaussSpot(TensorHolder):
@@ -117,12 +121,12 @@ class GaussSpot(TensorHolder):
     ######
 
 
-    def gauss_grid(self, size, **args):
+    def gauss_grid(self, size: RectangleDimentions, **args):
         shape = as_img_dims(size)
         # return gauss_grid(self.muX, self.muY, self.sigX, self.sigY, shape, **args)
         return gauss_grid_theta(self.mu, self.sigD, shape, **args, theta=self.theta)
 
-    def sum_image(self, size, dim=-3, clamp=True, cut_below=0., **kwargs):
+    def sum_image(self, size: RectangleDimentions, dim=-3, clamp=True, cut_below=0., **kwargs):
         grid = self.gauss_grid(size, cut_below=cut_below, torus=True, **kwargs)
         grid = grid * self.intensity.unsqueeze(-1).unsqueeze(-1)
         img = grid.sum(dim)

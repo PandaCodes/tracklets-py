@@ -119,8 +119,8 @@ def gauss_grid_theta(
         assert theta.shape == sh[:-1], "Theta batch size is different from mu"
         theta = theta.unsqueeze(-1).unsqueeze(-1)   # [..., 1-w, 1-h]
 
-    x = torch.arange(0, img_size[0]) + 0.5  # value is in the center of pixel
-    y = torch.arange(0, img_size[1]) + 0.5
+    x = torch.arange(0, img_size[0], device=device) + 0.5  # value is in the center of pixel
+    y = torch.arange(0, img_size[1], device=device) + 0.5
     x, y = torch.meshgrid(x, y, indexing='ij')  # [..., w, h]
     crd = torch.stack([x, y], dim=-1)           # [..., w, h, 2]
     crd = ensure_tensor(crd, double, device)
@@ -206,7 +206,7 @@ def gauss_grid_from_vec(
 
 def vec_set_to_gaussian_spots_sum(vec_set, img_size, **args):
     gausses = gauss_grid_from_vec(vec_set, img_size, **args)
-    return gausses.sum(axis=-3)
+    return gausses.sum(dim=-3)
 
 
 def model_loss(outputs, images, masks, img_size):

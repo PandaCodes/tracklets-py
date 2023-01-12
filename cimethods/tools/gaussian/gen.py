@@ -30,7 +30,7 @@ def generate(
     image_size: RectangleDimentions,
     batch_size: Union[int, None]=None,
     intensity=TruncGaussParams(range=(0, 1), mu=1., sig=1.),
-    sig=TruncGaussParams(range=(-0.5, 0.5 ), mu=0.5, sig=0.3),
+    sig=TruncGaussParams(range=(0.1, 2 ), mu=1, sig=0.3),
     sig_max_xy_ratio=1.6,
     n_spots: Union[int, None]=None,
     theta=True,
