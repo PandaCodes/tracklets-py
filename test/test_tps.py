@@ -7,7 +7,7 @@ import numpy.linalg as nl
 import matplotlib.pyplot as plt
 
 
-from tracklets.tps import TPS, makeL, liftPts
+from cimethods.stitching.tps import TPS, makeL, liftPts
 
 @pytest.mark.visual
 def test_tps():
